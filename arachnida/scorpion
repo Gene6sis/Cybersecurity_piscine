@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+from PIL import Image
+from PIL.ExifTags import TAGS
+import os
+import argparse
+
+def get_exif_data(image):
+    """Extract EXIF data from an image and return it as a dictionary."""
+    try:
+        exif_data = image._getexif()
+        if exif_data is not None:
+            return {TAGS.get(tag, tag): value for tag, value in exif_data.items()}
+        else:
+            return None
+    except AttributeError:
+        return None
+
+def display_image_metadata(file_path):
+    """Display the EXIF and basic metadata of an image."""
+    if not os.path.isfile(file_path):
+        print(f"Error: {file_path} is not a valid file.")
+        return
+
+    try:
+        with Image.open(file_path) as img:
+            print(f"\nMetadata for {file_path}:\n")
+            # Basic file info
+            print(f"Format: {img.format}")
+            print(f"Size: {img.size}")
+            print(f"Mode: {img.mode}")
+            
+            # EXIF data
+            exif_data = get_exif_data(img)
+            if exif_data:
+                print("\nEXIF Data:")
+                for tag, value in exif_data.items():
+                    print(f"{tag}: {value}")
+            else:
+                print("No EXIF data found.")
+    except Exception as e:
+        print(f"Error opening {file_path}: {e}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Scorpion program to parse and display image metadata.")
+    parser.add_argument("files", nargs="+", help="Image files to parse for metadata.")
+    
+    args = parser.parse_args()
+    
+    # Process each file and display its metadata
+    for file_path in args.files:
+        display_image_metadata(file_path)
+
+if __name__ == "__main__":
+    main()
