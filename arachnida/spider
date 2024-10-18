@@ -58,10 +58,12 @@ def extract_links(soup, base_url):
             links.append(link_url)
     return links
 
-def spider(url, path, depth, max_depth):
+def spider(url, path, depth, max_depth, visited):
     """Recursively download images from a URL, up to a specified depth."""
-    if depth > max_depth:
+    if depth > max_depth or url in visited:
         return
+    visited.add(url)
+    print(f"Visiting {url} at depth {depth}")
     html = get_html(url)
     if html is None:
         return
@@ -72,7 +74,7 @@ def spider(url, path, depth, max_depth):
     
     links = extract_links(soup, url)
     for link in links:
-        spider(link, path, depth + 1, max_depth)
+        spider(link, path, depth + 1, max_depth, visited)
 
 def main():
     parser = argparse.ArgumentParser(description="Spider program to download images from a website.", add_help=False)
@@ -88,8 +90,9 @@ def main():
         os.makedirs(args.p)
 
     # Start spidering with the given parameters
+    visited = set()
     if args.r:
-        spider(args.url, args.p, 0, args.l)
+        spider(args.url, args.p, 0, args.l, visited)
     else:
         html = get_html(args.url)
         if html:
