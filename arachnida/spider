@@ -75,7 +75,7 @@ def spider(url, path, depth, max_depth):
         spider(link, path, depth + 1, max_depth)
 
 def main():
-    parser = argparse.ArgumentParser(description="Spider program to download images from a website.")
+    parser = argparse.ArgumentParser(description="Spider program to download images from a website.", add_help=False)
     parser.add_argument("url", help="The URL to scrape for images.")
     parser.add_argument("-r", action="store_true", help="Recursively download images.")
     parser.add_argument("-l", type=int, default=5, help="Maximum depth for recursive download (default: 5).")
